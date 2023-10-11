@@ -1,12 +1,13 @@
 // Note: When debugging, make sure that the renderItem and return are in the HomeScreen Function
 
-import { useState } from "react";
-import { View, StyleSheet, Text, Pressable, FlatList } from "react-native";
+import { useState, useEffect } from "react";
+import { View, StyleSheet, Text, Pressable, FlatList, Button } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import BlockRGB from "./components/BlockRGB";
+import DetailsScreen from "./components/DetailsScreen.jsx";
 
-function HomeScreen() {
+function HomeScreen({ navigation }) {
   const [colorArray, setColorArray] = useState([
     { red: 255, green: 0, blue: 0, id: "0" },
     { red: 0, green: 255, blue: 0, id: "1" },
@@ -14,7 +15,15 @@ function HomeScreen() {
   ]);
 
   function renderItem({ item }) {
-    return <BlockRGB red={item.red} green={item.green} blue={item.blue} />;
+    return (
+      <Pressable
+        onPress={() => {
+          navigation.navigate("Details List", item);
+        }}
+      >
+        <BlockRGB red={item.red} green={item.green} blue={item.blue} />
+      </Pressable>
+    );
   }
 
   function addColor() {
@@ -32,14 +41,20 @@ function HomeScreen() {
     setColorArray([]);
   }
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <Button onPress={addColor} title = "Add colour" />
+    });
+  });
+
   return (
     <View style={styles.container}>
-      <Pressable
+      {/* <Pressable
         style={{ height: 40, justifyContent: "center" }}
         onPress={addColor}
       >
         <Text style={{ color: "red" }}>Add Color</Text>
-      </Pressable>
+      </Pressable> */}
       <Pressable
         style={{ height: 40, justifyContent: "center" }}
         onPress={resetArray}
@@ -52,7 +67,6 @@ function HomeScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-
     </View>
   );
 }
@@ -64,6 +78,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Colour List" component={HomeScreen} />
+        <Stack.Screen name="Details List" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
